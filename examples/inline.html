@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>No Frame - Inline Editing example</title>
+<style type="text/css">
+	body { margin:80px auto; width:980px; }
+	h1, h2, h3 { font-family:Arial, Helvetica, sans-serif; }
+	table { border: 1px outset; }
+	td { border: 1px inset; }
+</style>
+</head>
+<body>
+	<h1 class="cmsPlainTextEdit"><em>No iframe</em> for TinyMCE 3.5 (forced plain text headline)</h1>
+
+	<div class="cmsRichTextEdit">
+		<p>
+			This is some <strong>block rich text</strong> that you can edit inside the TinyMCE editor.
+		</p>
+		<p>
+			Nam nisi elit, cursus in rhoncus sit amet, pulvinar laoreet leo. Quisque dignissim mauris a augue rutrum tempor. Donec vitae purus nec massa vestibulum ornare sit amet id tellus. Nunc quam mauris, fermentum nec lacinia eget, sollicitudin nec ante. Aliquam molestie volutpat dapibus. Nunc interdum viverra sodales.
+		</p>
+		<table>
+			<tr>
+				<td>Lorem</td>
+				<td>ipsum</td>
+				<td>dolor</td>
+			</tr>
+			<tr>
+				<td>sit</td>
+				<td>amet</td>
+				<td>consectetuer</td>
+			</tr>
+			<tr>
+				<td colspan="2">adipiscing</td>
+				<td>elit</td>
+			</tr>
+		</table>
+	</div>
+
+	<div>
+		<label>
+			<input type="checkbox"/>
+			<span class="cmsInlineRichTextEdit">
+				<strong>Lorem inline rich text</strong> dolor sit amet, <a href="#">consectetur adipisicing elit</a>, sed do eiusmod
+				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+				consequat.
+			</span>
+		</label>
+	</div>
+
+	<div class="cmsRichTextEdit">
+		<h1>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</h1>
+
+		<p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+
+		<h2>Header Level 2</h2>
+
+		<ol>
+			<li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+			<li>Aliquam tincidunt mauris eu risus.</li>
+		</ol>
+
+		<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>
+
+		<h3>Header Level 3</h3>
+
+		<ul>
+			<li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+			<li>Aliquam tincidunt mauris eu risus.</li>
+		</ul>
+
+		<pre><code>
+		#header h1 a {
+			display: block;
+			width: 300px;
+			height: 80px;
+		}
+		/* this is stripped out because we don't allow PRE or CODE in the config */
+		</code></pre>
+	</div>
+
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script type="text/javascript" src="../jscripts/tiny_mce/jquery.tinymce.js"></script>
+	<script type="text/javascript" src="../jscripts/tiny_mce/tiny_mce_jquery.js"></script>
+
+	<script type="text/javascript">
+		var $DOC = $(document);
+		var $toolbar = $("<div id='cmsInlineEditToolBar'/>");
+		var toolbar = $toolbar.appendTo("body").get(0);
+		var lastId = "";
+		var activeEd;
+		var activeToolbarHeight = 0;
+
+		var positionToolbar = function(id) {
+			// if editor has changed, show new toolbar and hide others
+			if (id != lastId) {
+				$(".mceEditor").hide();
+				document.getElementById([id, "_parent"].join("")).style.display = "inline";
+				activeToolbarHeight = document.getElementById([id, "_tbl"].join("")).clientHeight + 4;
+				activeEd = document.getElementById(id);
+				lastId = id;
+				toolbar.style.left = [activeEd.offsetLeft, "px"].join("");
+			}
+			// in any case, test if we need to reposition; keep it lightweight, no jQuery!
+			if ((window.pageYOffset + activeToolbarHeight > activeEd.offsetTop)
+			 && (window.pageYOffset < activeEd.offsetTop + activeEd.clientHeight)) {
+				toolbar.style.position = "fixed";
+				toolbar.style.top = [activeToolbarHeight, "px"].join("");
+			} else {
+				toolbar.style.position = "absolute";
+				toolbar.style.top = [activeEd.offsetTop, "px"].join("");
+			}
+		};
+
+		$DOC.on("scroll", function() {
+			!!lastId && positionToolbar(lastId);
+		});
+
+		$DOC.on("click focus", function(e) {
+			if ($(e.target).closest(".mceContentBody, .mceEditor, .mceMenu").length) {
+				toolbar.style.visibility = "visible";
+			} else {
+				toolbar.style.visibility = "hidden";
+			}
+		});
+
+		// this hack is needed for "object_resizing: true"
+		/*$toolbar.on("focus", "*", function(e) {
+			$(this).blur();
+		});*/
+
+		// fix some default behaviour
+		$DOC.on("click", "a .mceContentBody, button .mceContentBody, label .mceContentBody", function(e) {
+			e.preventDefault();
+		});
+
+		$(".cmsPlainTextEdit").tinymce({
+			content_editable: true,
+			theme: "inline",
+			theme_advanced_statusbar_location : "none",
+			theme_advanced_toolbar_container: "cmsInlineEditToolBar",
+			object_resizing: false,
+			visual: false,
+			formats: {
+				underline: { inline: "ins" },
+				strikethrough: { inline: "del" }
+			},
+			init_instance_callback: function(ed) {
+				positionToolbar(ed.id);
+			},
+			plugins: "iespell,inlinepopups,searchreplace,paste",
+			theme_advanced_buttons1: "undo,redo",
+			valid_elements: "none",
+			forced_root_block: "",
+			setup: function(ed) {
+				ed.onClick.add(function(ed) {
+					positionToolbar(ed.id);
+				});
+				ed.onKeyDown.add(function(ed, e) {
+					if (e.keyCode == 13)
+						tinymce.dom.Event.cancel(e);
+				});
+			}
+		});
+		$(".cmsInlineRichTextEdit").tinymce({
+			content_editable: true,
+			theme: "inline",
+			theme_advanced_statusbar_location : "none",
+			theme_advanced_toolbar_container: "cmsInlineEditToolBar",
+			object_resizing: false,
+			visual: false,
+			formats: {
+				underline: { inline: "ins" },
+				strikethrough: { inline: "del" }
+			},
+			init_instance_callback: function(ed) {
+				positionToolbar(ed.id);
+			},
+			plugins: "autolink,advlink,iespell,inlinepopups,searchreplace,paste,nonbreaking,xhtmlxtras",
+			theme_advanced_buttons1: "bold,italic,underline,strikethrough,sub,sup,|,link,unlink,|,removeformat,code,|,undo,redo",
+			valid_elements: "+a[tabindex|accesskey|href|onclick|target|title|name],-strong/-b,-em/-i,-ins/-u,-del/-strike,sub,sup,br",
+			force_br_newlines: true,
+			forced_root_block: "",
+			setup: function(ed) {
+				ed.onClick.add(function(ed) {
+					positionToolbar(ed.id);
+				});
+				ed.onKeyDown.add(function(ed, e) {
+					if (e.keyCode == 13) {
+						tinymce.dom.Event.cancel(e);
+						ed.selection.setContent("<br/>");
+					}
+				});
+			}
+		});
+		$(".cmsRichTextEdit").tinymce({
+			content_editable: true,
+			theme: "inline",
+			theme_advanced_statusbar_location : "none",
+			theme_advanced_toolbar_container: "cmsInlineEditToolBar",
+			object_resizing: false,
+			visual: false,
+			formats: {
+				underline: { inline: "ins" },
+				strikethrough: { inline: "del" }
+			},
+			init_instance_callback: function(ed) {
+				positionToolbar(ed.id);
+			},
+			plugins: "autolink,lists,table,advlink,iespell,inlinepopups,searchreplace,paste,nonbreaking,xhtmlxtras",
+			theme_advanced_buttons1: "formatselect,|,bold,italic,underline,strikethrough,sub,sup,|,link,unlink,anchor,|,removeformat,code,visualaid,|,undo,redo",
+			theme_advanced_buttons2: "tablecontrols,|,bullist,numlist,|,outdent,indent,blockquote,hr",
+			theme_advanced_blockformats: "p,h1,h2,h3,h4,h5,h6",
+			valid_elements: "+a[tabindex|accesskey|href|onclick|target|title|name],-strong/-b,-em/-i,-ins/-u,-del/-strike,#p[id],#h1[id],#h2[id],#h3[id],#h4[id],#h5[id],#h6[id],sub,sup,-ol[id],-ul[id],-li,-blockquote,br,hr,-table[summary],-tr,tbody,thead,tfoot,#td[colspan|rowspan|width|height|align|valign|scope],#th[colspan|rowspan|width|height|align|valign|scope]",
+			force_br_newlines: false,
+			forced_root_block: "p",
+			setup: function(ed) {
+				ed.onClick.add(function(ed) {
+					positionToolbar(ed.id);
+				});
+			}
+		});
+	</script>
+</body>
+</html>
