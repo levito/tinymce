@@ -1,11 +1,10 @@
 span.mceText { background-color:transparent !important; }
 #cmsInlineEditToolBar { position:absolute; height:0; visibility:hidden; }
-#cmsInlineEditToolBar .mceLayout { position:absolute; bottom:0; border:2px solid #50b2d2; box-shadow:0 2px 10px rgba(0,0,0,0.3); }
+#cmsInlineEditToolBar .mceLayout { position:absolute; bottom:0; border:1px solid #aaa; box-shadow:0 0 3px rgba(0,0,0,0.15); }
 #cmsInlineEditToolBar .mceLast > td,
 #cmsInlineEditToolBar .mceFirst > td { border:none; }
 #cmsInlineEditToolBar *,
 .mceContentBody { outline:none; }
-.mceContentBody { background:rgba(80,178,210,0.2); }
 .mceContentBody .mceItemTable,
 .mceContentBody .mceItemTable td,
 .mceContentBody .mceItemTable th,
