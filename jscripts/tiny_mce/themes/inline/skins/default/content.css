@@ -1,5 +1,5 @@
 span.mceText { background-color:transparent !important; }
-#cmsInlineEditToolBar { position:absolute; height:0; visibility:hidden; }
+#cmsInlineEditToolBar { position:absolute; height:0; visibility:hidden; z-index:20000; }
 #cmsInlineEditToolBar .mceLayout { position:absolute; bottom:0; border:1px solid #aaa; box-shadow:0 0 3px rgba(0,0,0,0.15); }
 #cmsInlineEditToolBar .mceLast > td,
 #cmsInlineEditToolBar .mceFirst > td { border:none; }
